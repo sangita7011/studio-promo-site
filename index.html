@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priya's GFX Studio ﹕ Promo</title>
+    <style>
+        :root { --pink: #fceef2; --dark-pink: #f2d5dd; --text: #555; --accent: #d1d9e0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--pink); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 400px; text-align: center; }
+        h2 { font-size: 1.2rem; margin-bottom: 20px; color: #d4a5b2; letter-spacing: 1px; }
+        input { width: 85%; padding: 12px; margin: 8px 0; border: 1px solid var(--accent); border-radius: 10px; outline: none; text-align: center; font-size: 0.9rem; }
+        button { background-color: var(--dark-pink); border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; color: white; text-transform: uppercase; margin-top: 10px; }
+        button:hover { background-color: #ebc1cc; transform: scale(1.02); }
+        .admin-link { margin-top: 25px; font-size: 0.75rem; cursor: pointer; text-decoration: underline; color: #bbb; }
+        .hidden { display: none; }
+        .code-item { background: #fafafa; margin: 10px 0; padding: 15px; border-radius: 10px; text-align: left; border: 1px solid #eee; font-size: 0.85rem; }
+        .success-box { background: #f0fff4; border: 1px solid #c6f6d5; padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .error { color: #ff8da1; font-weight: bold; margin-top: 15px; display: block; }
+        hr { border: 0.5px solid #eee; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="clientView" class="container">
+        <h2>˗ˏˋ 📸 ﹕ promo portal ◌</h2>
+        <input type="text" id="discordUser" placeholder="your discord username">
+        <input type="text" id="promoInput" placeholder="enter promo code">
+        <button onclick="applyCode()">check code</button>
+        <div id="message"></div>
+        <div class="admin-link" onclick="showLogin()">admin login</div>
+    </div>
+
+    <div id="loginView" class="container hidden">
+        <h2>˗ˏˋ 🦢 ﹕ admin login ◌</h2>
+        <input type="email" id="adminEmail" placeholder="admin email">
+        <input type="password" id="adminPass" placeholder="password">
+        <button onclick="handleLogin()">login</button>
+        <div class="admin-link" onclick="showClient()">back</div>
+    </div>
+
+    <div id="adminDash" class="container hidden">
+        <h2>˗ˏˋ 🧃 ﹕ code manager ◌</h2>
+        <div style="background: #fff9fa; padding: 10px; border-radius: 10px;">
+            <input type="text" id="newCode" placeholder="code name">
+            <input type="number" id="newDisc" placeholder="discount %">
+            <input type="number" id="newLimit" placeholder="max uses">
+            <button onclick="addCode()" style="width: 95%;">create / update code</button>
+        </div>
+        <hr>
+        <div id="codeList"></div>
+        <div class="admin-link" onclick="showClient()">logout</div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1473314538144403497/wqO6paLJxYT8foQNP3rOa6B8q57WT1OrKfHauRvfI-NSL-NjYnDp2iNpzZq51u8dtczm"; 
+        const DISCORD_INVITE = "https://discord.gg/HGjUWPkFWW";
+
+        // Initial codes with your requested values
+        let codes = JSON.parse(localStorage.getItem('studio_codes')) || [
+            { name: "OPENING20", discount: 20, limit: 1, used: 0 },
+            { name: "DREAMY10", discount: 10, limit: 1, used: 0 },
+            { name: "JUICEBOX", discount: 15, limit: 1, used: 0 }
+        ];
+
+        function showLogin() { hideAll(); document.getElementById('loginView').classList.remove('hidden'); }
+        function showClient() { hideAll(); document.getElementById('clientView').classList.remove('hidden'); }
+        function hideAll() { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); }
+        
+        function handleLogin() {
+            if(document.getElementById('adminEmail').value === "admin@priya.com" && document.getElementById('adminPass').value === "studio2026") {
+                hideAll(); document.getElementById('adminDash').classList.remove('hidden'); renderCodes();
+            } else { alert("wrong credentials, sweetie!"); }
+        }
+
+        function applyCode() {
+            const user = document.getElementById('discordUser').value;
+            const input = document.getElementById('promoInput').value.toUpperCase();
+            const found = codes.find(c => c.name === input);
+            const msg = document.getElementById('message');
+
+            if(!user) return alert("please enter your discord username first! 🎀");
+
+            if(found) {
+                if(found.used >= found.limit) {
+                    msg.innerHTML = "<span class='error'>your code is invalid or expired! ◌</span>";
+                } else {
+                    msg.innerHTML = `
+                        <div class="success-box">
+                            <div style="color: #d4a5b2; font-weight: bold;">✧ success! you got ${found.discount}% off! ◌</div>
+                            <button onclick="claimDiscount('${user}', '${found.name}', ${found.discount})">claim via ticket</button>
+                        </div>`;
+                }
+            } else { msg.innerHTML = "<span class='error'>your code is invalid or expired! ◌</span>"; }
+        }
+
+        function claimDiscount(username, codeName, percent) {
+            const codeIndex = codes.findIndex(c => c.name === codeName);
+            codes[codeIndex].used++; 
+            localStorage.setItem('studio_codes', JSON.stringify(codes));
+
+            if(WEBHOOK_URL !== "https://discord.com/api/webhooks/1473314538144403497/wqO6paLJxYT8foQNP3rOa6B8q57WT1OrKfHauRvfI-NSL-NjYnDp2iNpzZq51u8dtczm") {
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        embeds: [{
+                            title: "🎟️ Discount Claimed!",
+                            color: 16764914,
+                            fields: [
+                                { name: "User", value: username, inline: true },
+                                { name: "Code", value: codeName, inline: true },
+                                { name: "Usage", value: `${codes[codeIndex].used}/${codes[codeIndex].limit}`, inline: true }
+                            ]
+                        }]
+                    })
+                });
+            }
+            alert("Sent! Redirecting to Discord... 🎀");
+            window.location.href = DISCORD_INVITE;
+        }
+
+        function renderCodes() {
+            const list = document.getElementById('codeList');
+            list.innerHTML = "";
+            codes.forEach((c, i) => {
+                list.innerHTML += `<div class="code-item">
+                    <b>${c.name}</b><br>
+                    Discount: ${c.discount}% | Uses: ${c.used}/${c.limit}<br>
+                    <button onclick="deleteCode(${i})" style="padding: 5px 10px; background: #ffccd5; font-size: 10px; margin-top:5px;">DELETE</button>
+                    <button onclick="editCode(${i})" style="padding: 5px 10px; background: var(--accent); font-size: 10px; margin-top:5px;">EDIT</button>
+                </div>`;
+            });
+            localStorage.setItem('studio_codes', JSON.stringify(codes));
+        }
+
+        function addCode() {
+            const name = document.getElementById('newCode').value.toUpperCase();
+            const disc = document.getElementById('newDisc').value;
+            const lim = document.getElementById('newLimit').value;
+            if(!name || !disc || !lim) return alert("Fill all fields! 🎀");
+            
+            const existingIndex = codes.findIndex(c => c.name === name);
+            if(existingIndex > -1) {
+                codes[existingIndex].discount = disc;
+                codes[existingIndex].limit = lim;
+                alert("Code updated!");
+            } else {
+                codes.push({name, discount: disc, limit: parseInt(lim), used: 0});
+            }
+            renderCodes();
+        }
+
+        function editCode(i) {
+            document.getElementById('newCode').value = codes[i].name;
+            document.getElementById('newDisc').value = codes[i].discount;
+            document.getElementById('newLimit').value = codes[i].limit;
+        }
+
+        function deleteCode(i) { if(confirm("Delete this code?")) { codes.splice(i, 1); renderCodes(); } }
+    </script>
+</body>
+</html>
