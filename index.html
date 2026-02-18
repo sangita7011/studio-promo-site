@@ -67,32 +67,18 @@
         }
         button:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-        .mute-btn {
-            position: fixed; bottom: 20px; left: 20px;
-            background: white; border-radius: 50%; width: 45px; height: 45px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 100;
-            font-size: 1.2rem; transition: 0.3s;
-        }
-        .mute-btn:hover { transform: scale(1.1); }
-
         .refer-box { margin-top: 20px; font-size: 0.75rem; color: #888; text-decoration: underline; cursor: pointer; opacity: 0.7; }
         .refer-box:hover { opacity: 1; }
         .hidden { display: none; }
         .admin-row { display: flex; justify-content: space-between; padding: 10px; background: white; margin: 5px 0; border-radius: 10px; font-size: 0.8rem; }
     </style>
 </head>
-<body onclick="startExperience()">
-
-    <div class="mute-btn" onclick="toggleMusic(event)" id="musicIcon">🔇</div>
-    <audio id="bgMusic" loop preload="auto">
-        <source src="https://www.chosic.com/wp-content/uploads/2021/04/Rainy-Day-Lofi-Chill.mp3" type="audio/mpeg">
-    </audio>
+<body>
 
     <div id="petalContainer"></div>
 
     <div id="mainView" class="card">
-        <h2 id="welcomeText">˗ˏˋ 📸 ﹕ promo portal ◌</h2>
+        <h2 id="welcomeText">˗ˏˋ 📸 ﹕ lookbook ◌</h2>
         <input type="text" id="user" placeholder="discord username" oninput="updateWelcomeText()">
         <input type="text" id="promo" placeholder="promo code">
         <button onclick="apply()">Redeem ✧</button>
@@ -143,32 +129,6 @@
         }
         setInterval(createPetal, 600);
 
-        // --- Improved Audio Logic ---
-        const music = document.getElementById('bgMusic');
-        let audioStarted = false;
-
-        function startExperience() {
-            if (!audioStarted) {
-                music.play().then(() => {
-                    document.getElementById('musicIcon').innerText = "🔊";
-                    audioStarted = true;
-                }).catch(e => console.log("Still waiting for user interaction..."));
-            }
-        }
-
-        function toggleMusic(e) {
-            e.stopPropagation(); 
-            const btn = document.getElementById('musicIcon');
-            if (music.paused) {
-                music.play();
-                btn.innerText = "🔊";
-                audioStarted = true;
-            } else {
-                music.pause();
-                btn.innerText = "🔇";
-            }
-        }
-
         // --- UI Logic ---
         function updateWelcomeText() {
             const n = document.getElementById('user').value;
@@ -204,10 +164,8 @@
         function generateReferral() {
             const u = document.getElementById('user').value;
             if(!u) return alert("Please type your username first! 🎀");
-            
             const baseUrl = window.location.href.split('?')[0];
             const refLink = `${baseUrl}?ref=${encodeURIComponent(u)}`;
-            
             navigator.clipboard.writeText(refLink).then(() => {
                 alert("Referral link copied! Share this to get credit. ✨");
             }).catch(() => {
