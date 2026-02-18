@@ -3,162 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Priya's GFX Studio ﹕ Promo</title>
+    <title>Priya's GFX ﹕ Serenity Portal</title>
     <style>
-        :root { --pink: #fceef2; --dark-pink: #f2d5dd; --text: #555; --accent: #d1d9e0; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--pink); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 400px; text-align: center; }
-        h2 { font-size: 1.2rem; margin-bottom: 20px; color: #d4a5b2; letter-spacing: 1px; }
-        input { width: 85%; padding: 12px; margin: 8px 0; border: 1px solid var(--accent); border-radius: 10px; outline: none; text-align: center; font-size: 0.9rem; }
-        button { background-color: var(--dark-pink); border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; color: white; text-transform: uppercase; margin-top: 10px; }
-        button:hover { background-color: #ebc1cc; transform: scale(1.02); }
-        .admin-link { margin-top: 25px; font-size: 0.75rem; cursor: pointer; text-decoration: underline; color: #bbb; }
+        :root {
+            --pink: #fdf2f5;
+            --glass: rgba(255, 255, 255, 0.7);
+            --accent: #d4a5b2;
+            --text: #5e5e5e;
+            --success: #9dbb9d;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #fceef2 0%, #e6e9f0 100%);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- Falling Petals --- */
+        .petal {
+            position: fixed; top: -10%; background-color: #ffdae9;
+            border-radius: 150% 0 150% 0; opacity: 0.6;
+            pointer-events: none; z-index: 0; animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 35px;
+            padding: 40px;
+            width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.06);
+            text-align: center;
+            z-index: 10;
+        }
+
+        h2 { font-weight: 300; letter-spacing: 4px; color: var(--accent); margin-bottom: 25px; }
+
+        input {
+            width: 100%; padding: 16px; margin: 10px 0; border: none;
+            background: rgba(255, 255, 255, 0.4); border-radius: 18px;
+            box-sizing: border-box; outline: none; text-align: center;
+            color: var(--text);
+        }
+
+        button {
+            width: 100%; padding: 16px; margin-top: 15px; border: none;
+            border-radius: 18px; background: var(--accent); color: white;
+            font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+        .mute-btn {
+            position: fixed; bottom: 20px; left: 20px;
+            background: white; border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 100;
+            font-size: 1.2rem; transition: 0.3s;
+        }
+        .mute-btn:hover { transform: scale(1.1); }
+
+        .refer-box { margin-top: 20px; font-size: 0.75rem; color: #888; text-decoration: underline; cursor: pointer; opacity: 0.7; }
+        .refer-box:hover { opacity: 1; }
         .hidden { display: none; }
-        .code-item { background: #fafafa; margin: 10px 0; padding: 15px; border-radius: 10px; text-align: left; border: 1px solid #eee; font-size: 0.85rem; }
-        .success-box { background: #f0fff4; border: 1px solid #c6f6d5; padding: 15px; border-radius: 10px; margin-top: 20px; }
-        .error { color: #ff8da1; font-weight: bold; margin-top: 15px; display: block; }
-        hr { border: 0.5px solid #eee; margin: 20px 0; }
+        .admin-row { display: flex; justify-content: space-between; padding: 10px; background: white; margin: 5px 0; border-radius: 10px; font-size: 0.8rem; }
     </style>
 </head>
-<body>
+<body onclick="startExperience()">
 
-    <div id="clientView" class="container">
-        <h2>˗ˏˋ 📸 ﹕ promo portal ◌</h2>
-        <input type="text" id="discordUser" placeholder="your discord username">
-        <input type="text" id="promoInput" placeholder="enter promo code">
-        <button onclick="applyCode()">check code</button>
-        <div id="message"></div>
-        <div class="admin-link" onclick="showLogin()">admin login</div>
+    <div class="mute-btn" onclick="toggleMusic(event)" id="musicIcon">🔇</div>
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://www.chosic.com/wp-content/uploads/2021/04/Rainy-Day-Lofi-Chill.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="petalContainer"></div>
+
+    <div id="mainView" class="card">
+        <h2 id="welcomeText">˗ˏˋ 📸 ﹕ promo portal ◌</h2>
+        <input type="text" id="user" placeholder="discord username" oninput="updateWelcomeText()">
+        <input type="text" id="promo" placeholder="promo code">
+        <button onclick="apply()">Redeem ✧</button>
+        <div id="feedback"></div>
+        <div class="refer-box" onclick="generateReferral()">✧ get referral link ◌</div>
+        <p style="font-size: 0.6rem; color: #ccc; margin-top: 40px; cursor: pointer;" onclick="switchView('loginView')">staff entry</p>
     </div>
 
-    <div id="loginView" class="container hidden">
-        <h2>˗ˏˋ 🦢 ﹕ admin login ◌</h2>
-        <input type="email" id="adminEmail" placeholder="admin email">
-        <input type="password" id="adminPass" placeholder="password">
-        <button onclick="handleLogin()">login</button>
-        <div class="admin-link" onclick="showClient()">back</div>
+    <div id="loginView" class="card hidden">
+        <h2>˗ˏˋ 🦢 ﹕ auth ◌</h2>
+        <input type="email" id="email" placeholder="admin email">
+        <input type="password" id="pass" placeholder="password">
+        <button onclick="login()">Login</button>
+        <p onclick="switchView('mainView')" style="cursor: pointer; font-size: 0.7rem;">back</p>
     </div>
 
-    <div id="adminDash" class="container hidden">
-        <h2>˗ˏˋ 🧃 ﹕ code manager ◌</h2>
-        <div style="background: #fff9fa; padding: 10px; border-radius: 10px;">
-            <input type="text" id="newCode" placeholder="code name">
-            <input type="number" id="newDisc" placeholder="discount %">
-            <input type="number" id="newLimit" placeholder="max uses">
-            <button onclick="addCode()" style="width: 95%;">create / update code</button>
-        </div>
-        <hr>
-        <div id="codeList"></div>
-        <div class="admin-link" onclick="showClient()">logout</div>
+    <div id="adminView" class="card hidden" style="width: 500px;">
+        <h2>˗ˏˋ 🧃 ﹕ inventory ◌</h2>
+        <div id="codeList" style="max-height: 200px; overflow-y: auto;"></div>
+        <hr style="border:0.5px solid #eee; margin:15px 0;">
+        <input type="text" id="cName" placeholder="CODE NAME">
+        <input type="number" id="cDisc" placeholder="Discount %">
+        <button onclick="saveCode()">Create/Update Code</button>
+        <p onclick="switchView('mainView')" style="cursor: pointer; font-size: 0.7rem;">logout</p>
     </div>
 
     <script>
-        // --- CONFIG ---
-        const WEBHOOK_URL = "https://discord.com/api/webhooks/1473314538144403497/wqO6paLJxYT8foQNP3rOa6B8q57WT1OrKfHauRvfI-NSL-NjYnDp2iNpzZq51u8dtczm"; 
-        const DISCORD_INVITE = "https://discord.gg/HGjUWPkFWW";
+        const WEBHOOK = "https://discord.com/api/webhooks/1473314538144403497/wqO6paLJxYT8foQNP3rOa6B8q57WT1OrKfHauRvfI-NSL-NjYnDp2iNpzZq51u8dtczm"; 
+        const INVITE = "https://discord.gg/Y5GtAj6UZS";
 
-        // Initial codes with your requested values
-        let codes = JSON.parse(localStorage.getItem('studio_codes')) || [
-            { name: "OPENING20", discount: 20, limit: 1, used: 0 },
-            { name: "DREAMY10", discount: 10, limit: 1, used: 0 },
-            { name: "JUICEBOX", discount: 15, limit: 1, used: 0 }
+        let codes = JSON.parse(localStorage.getItem('priya_codes')) || [
+            { name: "OPENING20", disc: 20 },
+            { name: "DREAMY10", disc: 10 },
+            { name: "JUICEBOX", disc: 15 }
         ];
+        let myUsedCodes = JSON.parse(localStorage.getItem('user_history')) || [];
 
-        function showLogin() { hideAll(); document.getElementById('loginView').classList.remove('hidden'); }
-        function showClient() { hideAll(); document.getElementById('clientView').classList.remove('hidden'); }
-        function hideAll() { document.querySelectorAll('.container').forEach(c => c.classList.add('hidden')); }
-        
-        function handleLogin() {
-            if(document.getElementById('adminEmail').value === "admin@priya.com" && document.getElementById('adminPass').value === "studio2026") {
-                hideAll(); document.getElementById('adminDash').classList.remove('hidden'); renderCodes();
-            } else { alert("wrong credentials, sweetie!"); }
+        // --- Petal Animation ---
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.width = Math.random() * 10 + 10 + 'px';
+            petal.style.height = petal.style.width;
+            petal.style.animationDuration = Math.random() * 3 + 5 + 's';
+            document.getElementById('petalContainer').appendChild(petal);
+            setTimeout(() => petal.remove(), 8000);
         }
+        setInterval(createPetal, 600);
 
-        function applyCode() {
-            const user = document.getElementById('discordUser').value;
-            const input = document.getElementById('promoInput').value.toUpperCase();
-            const found = codes.find(c => c.name === input);
-            const msg = document.getElementById('message');
+        // --- Improved Audio Logic ---
+        const music = document.getElementById('bgMusic');
+        let audioStarted = false;
 
-            if(!user) return alert("please enter your discord username first! 🎀");
-
-            if(found) {
-                if(found.used >= found.limit) {
-                    msg.innerHTML = "<span class='error'>your code is invalid or expired! ◌</span>";
-                } else {
-                    msg.innerHTML = `
-                        <div class="success-box">
-                            <div style="color: #d4a5b2; font-weight: bold;">✧ success! you got ${found.discount}% off! ◌</div>
-                            <button onclick="claimDiscount('${user}', '${found.name}', ${found.discount})">claim via ticket</button>
-                        </div>`;
-                }
-            } else { msg.innerHTML = "<span class='error'>your code is invalid or expired! ◌</span>"; }
-        }
-
-        function claimDiscount(username, codeName, percent) {
-            const codeIndex = codes.findIndex(c => c.name === codeName);
-            codes[codeIndex].used++; 
-            localStorage.setItem('studio_codes', JSON.stringify(codes));
-
-            if(WEBHOOK_URL !== "https://discord.com/api/webhooks/1473314538144403497/wqO6paLJxYT8foQNP3rOa6B8q57WT1OrKfHauRvfI-NSL-NjYnDp2iNpzZq51u8dtczm") {
-                fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        embeds: [{
-                            title: "🎟️ Discount Claimed!",
-                            color: 16764914,
-                            fields: [
-                                { name: "User", value: username, inline: true },
-                                { name: "Code", value: codeName, inline: true },
-                                { name: "Usage", value: `${codes[codeIndex].used}/${codes[codeIndex].limit}`, inline: true }
-                            ]
-                        }]
-                    })
-                });
+        function startExperience() {
+            if (!audioStarted) {
+                music.play().then(() => {
+                    document.getElementById('musicIcon').innerText = "🔊";
+                    audioStarted = true;
+                }).catch(e => console.log("Still waiting for user interaction..."));
             }
-            alert("Sent! Redirecting to Discord... 🎀");
-            window.location.href = DISCORD_INVITE;
         }
 
-        function renderCodes() {
-            const list = document.getElementById('codeList');
-            list.innerHTML = "";
+        function toggleMusic(e) {
+            e.stopPropagation(); 
+            const btn = document.getElementById('musicIcon');
+            if (music.paused) {
+                music.play();
+                btn.innerText = "🔊";
+                audioStarted = true;
+            } else {
+                music.pause();
+                btn.innerText = "🔇";
+            }
+        }
+
+        // --- UI Logic ---
+        function updateWelcomeText() {
+            const n = document.getElementById('user').value;
+            document.getElementById('welcomeText').innerText = n ? `hi, ${n}! ✧` : `˗ˏˋ 📸 ﹕ lookbook ◌`;
+        }
+
+        function switchView(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'adminView') renderAdmin();
+        }
+
+        function apply() {
+            const p = document.getElementById('promo').value.toUpperCase();
+            const found = codes.find(c => c.name === p);
+            const feed = document.getElementById('feedback');
+            
+            if(myUsedCodes.includes(p)) {
+                feed.innerHTML = `<span style="color:#ff8da1; font-size:0.8rem; margin-top:10px; display:block;">already used, darling! 🍥</span>`;
+                return;
+            }
+            if(found) {
+                feed.innerHTML = `<div style="background:rgba(240,255,244,0.6); padding:10px; border-radius:15px; margin-top:15px; border:1px solid #9dbb9d;">
+                    <span style="color:#9dbb9d; font-weight:bold;">✧ ${found.disc}% off ◌</span><br>
+                    <button onclick="claim('${found.name}', ${found.disc})">Confirm Claim</button>
+                </div>`;
+            } else {
+                feed.innerHTML = `<span style="color:#ff8da1; font-size:0.8rem; margin-top:10px; display:block;">invalid code 🍥</span>`;
+            }
+        }
+
+        // --- Referral & Webhook Logic ---
+        function generateReferral() {
+            const u = document.getElementById('user').value;
+            if(!u) return alert("Please type your username first! 🎀");
+            
+            const baseUrl = window.location.href.split('?')[0];
+            const refLink = `${baseUrl}?ref=${encodeURIComponent(u)}`;
+            
+            navigator.clipboard.writeText(refLink).then(() => {
+                alert("Referral link copied! Share this to get credit. ✨");
+            }).catch(() => {
+                prompt("Copy your link here:", refLink);
+            });
+        }
+
+        function claim(n, d) {
+            const u = document.getElementById('user').value || "Guest";
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref') || "Direct Visit";
+
+            myUsedCodes.push(n);
+            localStorage.setItem('user_history', JSON.stringify(myUsedCodes));
+
+            fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ embeds: [{ 
+                    title: "✨ LUXURY CLAIMED", 
+                    description: `**User:** ${u}\n**Code:** ${n}\n**Discount:** ${d}%\n**Referred By:** ${ref}`, 
+                    color: 13936050,
+                    timestamp: new Date()
+                }] })
+            });
+
+            alert("Claimed! Redirecting to ticket... 🏹");
+            window.location.href = INVITE;
+        }
+
+        // --- Admin Logic ---
+        function login() {
+            if(document.getElementById('email').value === "admin@priya.com" && document.getElementById('pass').value === "studio2026") switchView('adminView');
+            else alert("Staff credentials required. 🏹");
+        }
+
+        function renderAdmin() {
+            const list = document.getElementById('codeList'); list.innerHTML = "";
             codes.forEach((c, i) => {
-                list.innerHTML += `<div class="code-item">
-                    <b>${c.name}</b><br>
-                    Discount: ${c.discount}% | Uses: ${c.used}/${c.limit}<br>
-                    <button onclick="deleteCode(${i})" style="padding: 5px 10px; background: #ffccd5; font-size: 10px; margin-top:5px;">DELETE</button>
-                    <button onclick="editCode(${i})" style="padding: 5px 10px; background: var(--accent); font-size: 10px; margin-top:5px;">EDIT</button>
+                list.innerHTML += `<div class="admin-row" onclick="prepareEdit(${i})">
+                    <span><b>${c.name}</b> — ${c.disc}%</span>
+                    <button style="border:none; background:#ffccd5; cursor:pointer; padding:5px 10px; border-radius:8px;" onclick="event.stopPropagation(); del(${i})">del</button>
                 </div>`;
             });
-            localStorage.setItem('studio_codes', JSON.stringify(codes));
         }
-
-        function addCode() {
-            const name = document.getElementById('newCode').value.toUpperCase();
-            const disc = document.getElementById('newDisc').value;
-            const lim = document.getElementById('newLimit').value;
-            if(!name || !disc || !lim) return alert("Fill all fields! 🎀");
-            
-            const existingIndex = codes.findIndex(c => c.name === name);
-            if(existingIndex > -1) {
-                codes[existingIndex].discount = disc;
-                codes[existingIndex].limit = lim;
-                alert("Code updated!");
-            } else {
-                codes.push({name, discount: disc, limit: parseInt(lim), used: 0});
-            }
-            renderCodes();
+        function prepareEdit(i) {
+            document.getElementById('cName').value = codes[i].name;
+            document.getElementById('cDisc').value = codes[i].disc;
         }
-
-        function editCode(i) {
-            document.getElementById('newCode').value = codes[i].name;
-            document.getElementById('newDisc').value = codes[i].discount;
-            document.getElementById('newLimit').value = codes[i].limit;
+        function saveCode() {
+            const n = document.getElementById('cName').value.toUpperCase();
+            const d = document.getElementById('cDisc').value;
+            if(!n || !d) return;
+            const idx = codes.findIndex(c => c.name === n);
+            if(idx > -1) codes[idx].disc = d; else codes.push({name:n, disc:d});
+            localStorage.setItem('priya_codes', JSON.stringify(codes));
+            document.getElementById('cName').value = ""; document.getElementById('cDisc').value = "";
+            renderAdmin();
         }
-
-        function deleteCode(i) { if(confirm("Delete this code?")) { codes.splice(i, 1); renderCodes(); } }
+        function del(i) { codes.splice(i, 1); localStorage.setItem('priya_codes', JSON.stringify(codes)); renderAdmin(); }
     </script>
 </body>
 </html>
