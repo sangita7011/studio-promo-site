@@ -1,1 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priya's Studio ﹕ Commissions</title>
+    <style>
+        :root {
+            --pink: #ffc0cb;
+            --soft-white: #fff5f6;
+            --lace: #f8d7da;
+            --text: #5d4446;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--soft-white);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Header & Nav --- */
+        nav {
+            width: 100%;
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 2px solid var(--pink);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Containers --- */
+        .page {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        .active { display: block; }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--pink);
+            box-shadow: 0 5px 15px rgba(255, 192, 203, 0.3);
+            margin-bottom: 20px;
+        }
+
+        /* --- Forms --- */
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--pink);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #f8a5b5; }
+
+        /* --- Admin Specific --- */
+        .order-box {
+            border-left: 5px solid var(--pink);
+            padding: 10px;
+            margin: 10px 0;
+            background: #fff9fa;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a onclick="showPage('home')">Home</a>
+    <a onclick="showPage('order')">Order</a>
+    <a onclick="showPage('query')">Query</a>
+    <a onclick="showPage('admin-login')">Admin</a>
+</nav>
+
+<div id="home" class="page active">
+    <div class="card" style="text-align:center;">
+        <h1>˗ˏˋ 🦢 ﹕ Priya's Studio ◌</h1>
+        <p>Specializing in <b>Adopt Me House Commissions</b> & <b>Custom Site Design</b>.</p>
+        <hr style="border: 0.5px solid var(--pink); margin: 20px 0;">
+        <p>✨ <b>Payment Info:</b> We accept Adopt Me Pets or Robux. Prices are estimated based on your specific request!</p>
+        <p>🏹 <b>Note:</b> These commissions are <i>exclusive</i> to server members. Join the community before ordering!</p>
+        <p>🎀 <b>Portfolios:</b> Coming soon...</p>
+    </div>
+</div>
+
+<div id="order" class="page">
+    <div class="card">
+        <h2>˗ˏˋ 📸 ﹕ Start Your Commission</h2>
+        <p style="font-size: 0.8em; color: #ff8fa3;">⚠️ Reminder: Regularly check the site for progress updates or messages from admins!</p>
+        
+        <form id="orderForm">
+            <input type="text" id="discordUser" placeholder="Discord Username" required>
+            <input type="text" id="robloxUser" placeholder="Roblox Username" required>
+            
+            <select id="serviceType" required>
+                <option value="" disabled selected>Select Service</option>
+                <option value="Adopt Me House">Adopt Me House Build</option>
+                <option value="Website">Custom Website</option>
+            </select>
+
+            <textarea id="details" rows="4" placeholder="Describe everything you want (Theme, Build type, Page details, etc.)" required></textarea>
+            
+            <select id="payment" required>
+                <option value="" disabled selected>Payment Method</option>
+                <option value="Pets">Adopt Me Pets</option>
+                <option value="Robux">Robux</option>
+            </select>
+
+            <input type="text" id="promo" placeholder="Promo Code (Optional)">
+            <p style="font-size: 0.7em;">For discounts, visit our <a href="https://sangita7011.github.io/studio-promo-portal/" target="_blank">Promo Portal</a>.</p>
+
+            <button type="submit">Submit Order 🏹</button>
+        </form>
+    </div>
+</div>
+
+<div id="query" class="page">
+    <div class="card">
+        <h2>˗ˏˋ 🍥 ﹕ Live Query</h2>
+        <p>Have a question before you order? Message us here!</p>
+        <form id="queryForm">
+            <input type="text" id="qName" placeholder="Your Name" required>
+            <textarea id="qMsg" placeholder="Your Message..." required></textarea>
+            <button type="submit">Send Message ✧</button>
+        </form>
+    </div>
+</div>
+
+<div id="admin-login" class="page">
+    <div class="card" style="text-align:center;">
+        <h2>Staff Access 🦢</h2>
+        <input type="email" id="adminEmail" placeholder="Email">
+        <input type="password" id="adminPass" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<div id="admin-dashboard" class="page">
+    <div class="card">
+        <h2>Admin Dashboard</h2>
+        <button onclick="clearData()" style="background: red; font-size: 0.7em;">Clear All Data</button>
+        <h3>Orders:</h3>
+        <div id="orderList"></div>
+        <hr>
+        <h3>Queries:</h3>
+        <div id="queryList"></div>
+    </div>
+</div>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    // Login Logic
+    function login() {
+        const email = document.getElementById('adminEmail').value;
+        const pass = document.getElementById('adminPass').value;
+        if(email === 'admin@priya.com' && pass === 'studio2026') {
+            showPage('admin-dashboard');
+            renderAdminData();
+        } else {
+            alert('Incorrect credentials!');
+        }
+    }
+
+    // Submit Order
+    document.getElementById('orderForm').onsubmit = function(e) {
+        e.preventDefault();
+        const order = {
+            discord: document.getElementById('discordUser').value,
+            roblox: document.getElementById('robloxUser').value,
+            service: document.getElementById('serviceType').value,
+            details: document.getElementById('details').value,
+            pay: document.getElementById('payment').value,
+            promo: document.getElementById('promo').value,
+            date: new Date().toLocaleString()
+        };
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        alert('Order submitted! Check back for progress.');
+        this.reset();
+    };
+
+    // Submit Query
+    document.getElementById('queryForm').onsubmit = function(e) {
+        e.preventDefault();
+        const query = {
+            name: document.getElementById('qName').value,
+            msg: document.getElementById('qMsg').value,
+            date: new Date().toLocaleString()
+        };
+        let queries = JSON.parse(localStorage.getItem('queries') || '[]');
+        queries.push(query);
+        localStorage.setItem('queries', JSON.stringify(queries));
+        alert('Message sent! Admin will see this in the dashboard.');
+        this.reset();
+    };
+
+    function renderAdminData() {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const queries = JSON.parse(localStorage.getItem('queries') || '[]');
+        
+        document.getElementById('orderList').innerHTML = orders.map(o => `
+            <div class="order-box">
+                <b>${o.service}</b> - ${o.discord}<br>
+                <small>${o.date}</small><br>
+                Roblox: ${o.roblox} | Payment: ${o.pay} | Promo: ${o.promo}<br>
+                Details: ${o.details}
+            </div>
+        `).join('') || 'No orders yet.';
+
+        document.getElementById('queryList').innerHTML = queries.map(q => `
+            <div class="order-box" style="border-left-color: grey;">
+                <b>${q.name}</b>: ${q.msg} <br><small>${q.date}</small>
+            </div>
+        `).join('') || 'No messages yet.';
+    }
+
+    function clearData() {
+        if(confirm('Delete all records?')) {
+            localStorage.clear();
+            renderAdminData();
+        }
+    }
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priya's Studio ﹕ Commissions</title>
+    <style>
+        :root {
+            --pink: #ffc0cb;
+            --soft-white: #fff5f6;
+            --lace: #f8d7da;
+            --text: #5d4446;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--soft-white);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Header & Nav --- */
+        nav {
+            width: 100%;
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 2px solid var(--pink);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Containers --- */
+        .page {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        .active { display: block; }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--pink);
+            box-shadow: 0 5px 15px rgba(255, 192, 203, 0.3);
+            margin-bottom: 20px;
+        }
+
+        /* --- Forms --- */
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--pink);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #f8a5b5; }
+
+        /* --- Admin Specific --- */
+        .order-box {
+            border-left: 5px solid var(--pink);
+            padding: 10px;
+            margin: 10px 0;
+            background: #fff9fa;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a onclick="showPage('home')">Home</a>
+    <a onclick="showPage('order')">Order</a>
+    <a onclick="showPage('query')">Query</a>
+    <a onclick="showPage('admin-login')">Admin</a>
+</nav>
+
+<div id="home" class="page active">
+    <div class="card" style="text-align:center;">
+        <h1>˗ˏˋ 🦢 ﹕ Priya's Studio ◌</h1>
+        <p>Specializing in <b>Adopt Me House Commissions</b> & <b>Custom Site Design</b>.</p>
+        <hr style="border: 0.5px solid var(--pink); margin: 20px 0;">
+        <p>✨ <b>Payment Info:</b> We accept Adopt Me Pets or Robux. Prices are estimated based on your specific request!</p>
+        <p>🏹 <b>Note:</b> These commissions are <i>exclusive</i> to server members. Join the community before ordering!</p>
+        <p>🎀 <b>Portfolios:</b> Coming soon...</p>
+    </div>
+</div>
+
+<div id="order" class="page">
+    <div class="card">
+        <h2>˗ˏˋ 📸 ﹕ Start Your Commission</h2>
+        <p style="font-size: 0.8em; color: #ff8fa3;">⚠️ Reminder: Regularly check the site for progress updates or messages from admins!</p>
+        
+        <form id="orderForm">
+            <input type="text" id="discordUser" placeholder="Discord Username" required>
+            <input type="text" id="robloxUser" placeholder="Roblox Username" required>
+            
+            <select id="serviceType" required>
+                <option value="" disabled selected>Select Service</option>
+                <option value="Adopt Me House">Adopt Me House Build</option>
+                <option value="Website">Custom Website</option>
+            </select>
+
+            <textarea id="details" rows="4" placeholder="Describe everything you want (Theme, Build type, Page details, etc.)" required></textarea>
+            
+            <select id="payment" required>
+                <option value="" disabled selected>Payment Method</option>
+                <option value="Pets">Adopt Me Pets</option>
+                <option value="Robux">Robux</option>
+            </select>
+
+            <input type="text" id="promo" placeholder="Promo Code (Optional)">
+            <p style="font-size: 0.7em;">For discounts, visit our <a href="https://sangita7011.github.io/studio-promo-portal/" target="_blank">Promo Portal</a>.</p>
+
+            <button type="submit">Submit Order 🏹</button>
+        </form>
+    </div>
+</div>
+
+<div id="query" class="page">
+    <div class="card">
+        <h2>˗ˏˋ 🍥 ﹕ Live Query</h2>
+        <p>Have a question before you order? Message us here!</p>
+        <form id="queryForm">
+            <input type="text" id="qName" placeholder="Your Name" required>
+            <textarea id="qMsg" placeholder="Your Message..." required></textarea>
+            <button type="submit">Send Message ✧</button>
+        </form>
+    </div>
+</div>
+
+<div id="admin-login" class="page">
+    <div class="card" style="text-align:center;">
+        <h2>Staff Access 🦢</h2>
+        <input type="email" id="adminEmail" placeholder="Email">
+        <input type="password" id="adminPass" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<div id="admin-dashboard" class="page">
+    <div class="card">
+        <h2>Admin Dashboard</h2>
+        <button onclick="clearData()" style="background: red; font-size: 0.7em;">Clear All Data</button>
+        <h3>Orders:</h3>
+        <div id="orderList"></div>
+        <hr>
+        <h3>Queries:</h3>
+        <div id="queryList"></div>
+    </div>
+</div>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    // Login Logic
+    function login() {
+        const email = document.getElementById('adminEmail').value;
+        const pass = document.getElementById('adminPass').value;
+        if(email === 'admin@priya.com' && pass === 'studio2026') {
+            showPage('admin-dashboard');
+            renderAdminData();
+        } else {
+            alert('Incorrect credentials!');
+        }
+    }
+
+    // Submit Order
+    document.getElementById('orderForm').onsubmit = function(e) {
+        e.preventDefault();
+        const order = {
+            discord: document.getElementById('discordUser').value,
+            roblox: document.getElementById('robloxUser').value,
+            service: document.getElementById('serviceType').value,
+            details: document.getElementById('details').value,
+            pay: document.getElementById('payment').value,
+            promo: document.getElementById('promo').value,
+            date: new Date().toLocaleString()
+        };
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        alert('Order submitted! Check back for progress.');
+        this.reset();
+    };
+
+    // Submit Query
+    document.getElementById('queryForm').onsubmit = function(e) {
+        e.preventDefault();
+        const query = {
+            name: document.getElementById('qName').value,
+            msg: document.getElementById('qMsg').value,
+            date: new Date().toLocaleString()
+        };
+        let queries = JSON.parse(localStorage.getItem('queries') || '[]');
+        queries.push(query);
+        localStorage.setItem('queries', JSON.stringify(queries));
+        alert('Message sent! Admin will see this in the dashboard.');
+        this.reset();
+    };
+
+    function renderAdminData() {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const queries = JSON.parse(localStorage.getItem('queries') || '[]');
+        
+        document.getElementById('orderList').innerHTML = orders.map(o => `
+            <div class="order-box">
+                <b>${o.service}</b> - ${o.discord}<br>
+                <small>${o.date}</small><br>
+                Roblox: ${o.roblox} | Payment: ${o.pay} | Promo: ${o.promo}<br>
+                Details: ${o.details}
+            </div>
+        `).join('') || 'No orders yet.';
+
+        document.getElementById('queryList').innerHTML = queries.map(q => `
+            <div class="order-box" style="border-left-color: grey;">
+                <b>${q.name}</b>: ${q.msg} <br><small>${q.date}</small>
+            </div>
+        `).join('') || 'No messages yet.';
+    }
+
+    function clearData() {
+        if(confirm('Delete all records?')) {
+            localStorage.clear();
+            renderAdminData();
+        }
+    }
+</script>
+
+</body>
+</html>
